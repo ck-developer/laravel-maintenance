@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Ck\Laravel\Maintenance\Maintenance;
 use Illuminate\Http\Response;
 
-class CheckForMaintenanceMode
+class CheckForMaintenance
 {
 
     protected $app;
@@ -43,10 +43,8 @@ class CheckForMaintenanceMode
             if ($this->maintenance->getUpOn()->gt(Carbon::now())) {
                 $this->maintenance->up();
             } else {
-
                 return $this->response->create('down', 503);
             }
-
         }
 
         return $next($request);
