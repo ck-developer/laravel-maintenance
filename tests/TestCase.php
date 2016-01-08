@@ -18,7 +18,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Resolve application Console Kernel implementation.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param \Illuminate\Foundation\Application $app
      *
      * @return void
      */
@@ -30,7 +30,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Resolve application HTTP Kernel implementation.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param \Illuminate\Foundation\Application $app
      *
      * @return void
      */
@@ -52,7 +52,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Resolve application package alias.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param \Illuminate\Foundation\Application $app
      *
      * @return array
      */
