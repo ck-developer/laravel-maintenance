@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+        backupGlobals="false"
+        backupStaticAttributes="false"
+        bootstrap="./vendor/autoload.php"
+        colors="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        processIsolation="false"
+        stopOnFailure="true"
+        syntaxCheck="false">
+    <testsuites>
+        <testsuite name="Down Command Test Suite">
+            <directory suffix="DownCommandTest.php">./tests/Console/Commands</directory>
+        </testsuite>
+        <testsuite name="Up Command Test Suite">
+            <directory suffix="UpCommandTest.php">./tests/Console/Commands</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

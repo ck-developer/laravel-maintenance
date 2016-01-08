@@ -1,0 +1,9 @@
+### Composer template
+composer.phar
+vendor/
+
+### Composer template
+.idea
+
+### PHP CS Fixer template
+.php_cs.cache
