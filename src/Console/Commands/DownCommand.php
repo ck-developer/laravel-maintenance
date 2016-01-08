@@ -32,6 +32,7 @@ class DownCommand extends Command
     {
         return array(
             array('on', null, InputOption::VALUE_OPTIONAL, 'down application on time', null),
+            array('message', null, InputOption::VALUE_OPTIONAL, 'down application message', null)
         );
     }
 }
