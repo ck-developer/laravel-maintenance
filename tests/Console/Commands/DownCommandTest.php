@@ -35,6 +35,6 @@ class DownCommandTest extends TestCase
      */
     public function testDownOn()
     {
-        $this->artisan('down', array('--on' => '2016-01-07 23:00:00'));
+        $this->artisan('down', array('--on' => '2016-01-07 00:00:00'));
     }
 }

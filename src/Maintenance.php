@@ -31,6 +31,10 @@ class Maintenance
      */
     private $meta;
 
+    /**
+     * Create the Maintenance instance
+     * @param \Illuminate\Foundation\Application $app
+     */
     public function __construct(Application $app)
     {
         $this->app = $app;
@@ -39,126 +43,190 @@ class Maintenance
         $this->load();
     }
 
-    public function down($downOn = "now", $message = null, $upOn = null)
-    {
-        $this->setDownOn($downOn)
-            ->setDownMessage($message)
-            ->setUpOn($upOn);
-
-        $this->file->put($this->getPath(), json_encode($this->meta));
-    }
-
-    public function up()
-    {
-        if (!$this->file->exists($this->getPath())) {
-            return false;
-        }
-
-        $this->file->delete($this->getPath());
-
-        return true;
-    }
-
-    public function isDown()
-    {
-        if (!$this->file->exists($this->getPath())) {
-            return false;
-        }
-
-        return true;
-    }
-
+    /**
+     * Load meta from file
+     * @return void
+     */
     protected function load()
     {
-        if ($this->file->exists($this->getPath())) {
-            $this->meta = json_decode($this->file->get($this->getPath()), true);
+        if ($this->file->exists($this->path())) {
+            $this->meta = json_decode($this->file->get($this->path()), true);
+        } else {
+            $this->meta = array();
         }
     }
 
-    protected function getPath()
+    /**
+     * Get the path to the file to use
+     * @return string
+     */
+    protected function path()
     {
         return $this->app->storagePath() . '/framework/maintenance.json';
     }
 
-    public function getMeta($key)
+    /**
+     * Get a value from meta
+     * @param string $key
+     * @return mixed
+     */
+    protected function get($key = null)
     {
-        if (!array_key_exists($key, $this->meta)) {
-            return false;
+        if (empty($key))
+        {
+            return $this->meta;
         }
 
-        return $this->meta[$key];
+        if($this->has($key))
+        {
+            return array_get($this->meta, $key);
+        }
     }
 
-    public function setMeta($key, $value)
+    /**
+     * Get a value in meta
+     * @param $key string
+     * @param  mixed $value
+     * @return $this
+     */
+    protected function set($key, $value)
     {
-        $this->meta[$key] = $value;
-    }
-
-    public function getDownOn($format = null)
-    {
-        if (!$this->isDown()) {
-            return null;
-        }
-
-        if (!$format) {
-            return Carbon::createFromTimestamp($this->getMeta('down_on'));
-        }
-
-        return Carbon::createFromTimestamp($this->getMeta('down_on'))->format($format);
-    }
-
-    public function setDownOn($time)
-    {
-        if ($time == 'now') {
-            $this->meta['down_on'] = Carbon::now()->timestamp;
-        } else {
-            $this->meta['down_on'] = Carbon::createFromFormat('Y-m-d H:i:s', $time)->timestamp;
-        }
+        array_set($this->meta,$key,$value);
 
         return $this;
     }
 
-    public function setDownMessage($text)
+    /**
+     * Get a value in meta
+     * @param $key string
+     * @return $this
+     */
+    public function has($key)
     {
-        $this->meta['down_message'] = $text;
+        if(array_key_exists($key, $this->meta))
+        {
+            return true;
+        }
 
-        return $this;
+        return false;
     }
 
-    public function setUpOn($time)
+    /**
+     * Save the file
+     *
+     * @return void
+     */
+    protected function save()
     {
-        if ($time) {
-            if ($time == 'now') {
-                $this->meta['up_on'] = Carbon::now()->timestamp;
-            } else {
-                $this->meta['up_on'] = Carbon::createFromFormat('Y-m-d H:i:s', $time)->timestamp;
+        $this->file->put($this->path(), json_encode($this->meta));
+    }
+
+    /**
+     * Delete the file
+     *
+     * @return void
+     */
+    protected function delete()
+    {
+        $this->file->delete($this->path());
+    }
+
+    public function getOn($format = null)
+    {
+        if($on = $this->get('on'))
+        {
+            Carbon::createFromTimestamp($on);
+
+            if($format)
+            {
+                return $on->format($format);
             }
+
+            return $on;
+        }
+    }
+
+    public function getFinish($format = null)
+    {
+        if($finish = $this->get('finish'))
+        {
+            Carbon::createFromTimestamp($finish);
+
+            if($format)
+            {
+                return $finish->format($format);
+            }
+
+            return $finish;
+        }
+    }
+
+    public function on($time = 'now', $format = 'Y-m-d H:i:s')
+    {
+        if($time == 'now' || is_null($time))
+        {
+            $this->set('on', Carbon::now()->timestamp);
+
+            return $this;
+        }
+
+        if($time instanceof Carbon)
+        {
+            $this->set('on', $time->timestamp);
+
         } else {
-            $this->meta['up_on'] = null;
+            $this->set('on', Carbon::createFromFormat($format, $time)->timestamp);
         }
 
         return $this;
     }
 
-    public function getUpOn($format = null)
+    public function finish($time = 'now', $format = 'Y-m-d H:i:s')
     {
-        if (!$this->isDown()) {
-            return null;
+        if(is_null($time))
+        {
+            return $this;
         }
 
-        if (!$format) {
-            return Carbon::createFromTimestamp($this->getMeta('up_on'));
+        if($time == 'now')
+        {
+            $this->set('finish', Carbon::now()->timestamp);
+
+            return $this;
         }
 
-        return Carbon::createFromTimestamp($this->getMeta('up_on'))->format($format);
+        if($time instanceof Carbon)
+        {
+            $this->set('finish', $time->timestamp);
+        } else {
+            $this->set('finish', Carbon::createFromFormat($format, $time)->timestamp);
+        }
+
+        return $this;
     }
 
-    public function getDownMessage()
+    public function isDown()
     {
-        if (!$this->isDown()) {
-            return null;
+        if($this->has('on'))
+        {
+            return true;
         }
 
-        return $this->getMeta('down_message');
+        return false;
+    }
+
+    public function down()
+    {
+        if(!$this->has('on'))
+        {
+            $this->on('now');
+        }
+
+        $this->save();
+    }
+
+    public function up()
+    {
+        $this->delete();
     }
 }
