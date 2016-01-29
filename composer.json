@@ -27,12 +27,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Ck\\Laravel\\Maintenance\\": "src/"
+            "Mwc\\Laravel\\Maintenance\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Ck\\Laravel\\Maintenance\\Test\\": "tests/"
+            "Mwc\\Laravel\\Maintenance\\Test\\": "tests/"
         }
     },
     "minimum-stability": "dev"

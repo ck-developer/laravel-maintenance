@@ -1,20 +1,51 @@
 <?php
 
 /*
- * This file is part of the LaravelMaintenance package.
+ * This file is part of the Laravel Maintenance package.
  *
- * (c) Claude Khedhiri <claude@khedhiri.com>
+ * (c) Claude Khedhiri <khedhiri@madewithcaffeine.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Ck\Laravel\Maintenance\Test;
+namespace Mwc\Laravel\Maintenance\Test;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
+    /**
+     * Define environment setup.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     *
+     * @return void
+     */
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('maintenance', array(
+            'driver' => 'file',
+            'path' => storage_path('framework'),
+            'urls' => array(
+                'welcome'
+            ),
+            'excepts' => array(
+                'ips' => array(
+                    '127.0.0.1'
+                ),
+                'env' => array(
+                    'local'
+                ),
+            ),
+            'view' => 'maintenance::default'
+        ));
+
+        $app['router']->get('/', function () {
+            return 'Welcome';
+        });
+    }
+
     /**
      * Resolve application Console Kernel implementation.
      *
@@ -24,7 +55,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function resolveApplicationConsoleKernel($app)
     {
-        $app->singleton('Illuminate\Contracts\Console\Kernel', 'Ck\Laravel\Maintenance\Test\Console\Kernel');
+        $app->singleton('Illuminate\Contracts\Console\Kernel', 'Mwc\Laravel\Maintenance\Test\Console\Kernel');
     }
 
     /**
@@ -36,7 +67,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function resolveApplicationHttpKernel($app)
     {
-        $app->singleton('Illuminate\Contracts\Http\Kernel', 'Ck\Laravel\Maintenance\Test\Http\Kernel');
+        $app->singleton('Illuminate\Contracts\Http\Kernel', 'Mwc\Laravel\Maintenance\Test\Http\Kernel');
     }
 
     /**
@@ -46,7 +77,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function getPackageProviders($app)
     {
-        return array('Ck\Laravel\Maintenance\MaintenanceService');
+        return array('Mwc\Laravel\Maintenance\MaintenanceService');
     }
 
     /**
@@ -59,7 +90,7 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageAliases($app)
     {
         return array(
-            'Maintenance' => 'Ck\Laravel\Maintenance\Facades\MaintenanceFacade'
+            'Maintenance' => 'Mwc\Laravel\Maintenance\Facades\MaintenanceFacade'
         );
     }
 }

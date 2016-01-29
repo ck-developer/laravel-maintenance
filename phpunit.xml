@@ -11,11 +11,11 @@
         stopOnFailure="true"
         syntaxCheck="false">
     <testsuites>
-        <testsuite name="Down Command Test Suite">
-            <directory suffix="DownCommandTest.php">./tests/Console/Commands</directory>
+        <testsuite name="Maintenance Test Suite">
+            <directory suffix="MaintenanceTest.php">./tests/</directory>
         </testsuite>
-        <testsuite name="Up Command Test Suite">
-            <directory suffix="UpCommandTest.php">./tests/Console/Commands</directory>
+        <testsuite name="Command Test Suite">
+            <directory suffix="Test.php">./tests/Console/Commands</directory>
         </testsuite>
     </testsuites>
 </phpunit>

@@ -1,15 +1,15 @@
 <?php
 
 /*
- * This file is part of the LaravelMaintenance package.
+ * This file is part of the Laravel Maintenance package.
  *
- * (c) Claude Khedhiri <claude@khedhiri.com>
+ * (c) Claude Khedhiri <khedhiri@madewithcaffeine.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Ck\Laravel\Maintenance\Test\Http;
+namespace Mwc\Laravel\Maintenance\Test\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -21,6 +21,6 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = array(
-        \Ck\Laravel\Maintenance\Http\Middleware\CheckForMaintenance::class,
+        \Mwc\Laravel\Maintenance\Http\Middleware\CheckForMaintenance::class,
     );
 }

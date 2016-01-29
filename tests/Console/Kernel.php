@@ -1,15 +1,15 @@
 <?php
 
 /*
- * This file is part of the LaravelMaintenance package.
+ * This file is part of the Laravel Maintenance package.
  *
- * (c) Claude Khedhiri <claude@khedhiri.com>
+ * (c) Claude Khedhiri <khedhiri@madewithcaffeine.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Ck\Laravel\Maintenance\Test\Console;
+namespace Mwc\Laravel\Maintenance\Test\Console;
 
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = array(
-        \Ck\Laravel\Maintenance\Console\Commands\DownCommand::class,
+        \Mwc\Laravel\Maintenance\Console\Commands\MaintenanceUpCommand::class,
+        \Mwc\Laravel\Maintenance\Console\Commands\MaintenanceDownCommand::class,
     );
 }

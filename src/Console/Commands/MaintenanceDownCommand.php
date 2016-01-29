@@ -3,36 +3,59 @@
 /*
  * This file is part of the Laravel Maintenance package.
  *
- * (c) Claude Khedhiri <claude@khedhiri.com>
+ * (c) Claude Khedhiri <khedhiri@madewithcaffeine.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Ck\Laravel\Maintenance\Console\Commands;
+namespace Mwc\Laravel\Maintenance\Console\Commands;
 
-use Carbon\Carbon;
-use Illuminate\Foundation\Console\DownCommand as Command;
+use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
-use File;
-use Maintenance;
+use Mwc\Laravel\Maintenance\Maintenance;
 
-class DownCommand extends Command
+class MaintenanceDownCommand extends Command
 {
     /**
-     * Execute the maintenance mode command
+     * The console command name.
+     *
+     * @var string
+     */
+    protected $name = 'maintenance';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Put the application into maintenance mode';
+
+    /**
+     * @var Maintenance
+     */
+    protected $maintenance;
+
+    public function __construct(Maintenance $maintenance)
+    {
+        parent::__construct();
+
+        $this->maintenance = $maintenance;
+    }
+
+    /**
+     * Execute the maintenance command
      *
      * @return void
      */
     public function fire()
     {
-        Maintenance::on($this->getOn())->finish($this->getFinish())->down();
+        $this->maintenance->up();
     }
 
     protected function getOn()
     {
-        if($on = $this->option('on'))
-        {
+        if ($on = $this->option('on')) {
             return Carbon::createFromFormat($this->option('format'), $on);
         }
 
@@ -41,8 +64,7 @@ class DownCommand extends Command
 
     protected function getFinish()
     {
-        if($finish = $this->option('finish'))
-        {
+        if ($finish = $this->option('finish')) {
             return Carbon::createFromFormat($this->option('format'), $finish);
         }
 

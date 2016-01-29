@@ -1,17 +1,18 @@
 <?php
 
 /*
- * This file is part of the LaravelMaintenance package.
+ * This file is part of the Laravel Maintenance package.
  *
- * (c) Claude Khedhiri <claude@khedhiri.com>
+ * (c) Claude Khedhiri <khedhiri@madewithcaffeine.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Ck\Laravel\Maintenance;
+namespace Mwc\Laravel\Maintenance;
 
 use Illuminate\Support\ServiceProvider;
+use Mwc\Laravel\Maintenance\Driver\FileDriver;
 
 class MaintenanceService extends ServiceProvider
 {
@@ -27,6 +28,13 @@ class MaintenanceService extends ServiceProvider
      */
     public function boot()
     {
+        $configPath = __DIR__ . '/../config/maintenance.php';
+
+        $this->mergeConfigFrom($configPath, 'maintenance');
+
+        $this->publishes(array(
+            $configPath => config_path('maintenance.php')
+        ), 'config');
     }
 
     /**
@@ -36,36 +44,48 @@ class MaintenanceService extends ServiceProvider
      */
     public function register()
     {
-        $this->registerUpCommand();
-        $this->registerDownCommand();
+        $this->registerMaintenanceDrivers();
         $this->registerMaintenance();
+        $this->registerMaintenanceCommand();
     }
 
     protected function registerMaintenance()
     {
         $this->app->singleton('maintenance', function ($app) {
-            return new Maintenance($app);
+
+            /*
+             * @var \Illuminate\Config\Repository;
+             */
+            $config = $app['config'];
+
+            return new Maintenance($config, $app['maintenance.'. $config->get('maintenance.driver') .'.driver']);
         });
 
-        $this->app->alias('maintenance', 'Ck\Laravel\Maintenance\Maintenance');
+        $this->app->alias('maintenance', 'Mwc\Laravel\Maintenance\Maintenance');
     }
 
-    protected function registerUpCommand()
+    protected function registerMaintenanceDrivers()
     {
-        $this->app->singleton('command.up', function ($app) {
-            return $app['Ck\Laravel\Maintenance\Console\Commands\UpCommand'];
+        $this->app->bind('maintenance.file.driver', function ($app) {
+            return new FileDriver($app);
         });
 
-        $this->commands('command.up');
+        $this->app->alias('maintenance.file.driver', 'Mwc\Laravel\Maintenance\Driver\FileDriver');
     }
 
-    protected function registerDownCommand()
+    protected function registerMaintenanceCommand()
     {
-        $this->app->singleton('command.down', function ($app) {
-            return $app['Ck\Laravel\Maintenance\Console\Commands\DownCommand'];
+        $this->app->singleton('command.maintenance.up', function ($app) {
+            return $app['Mwc\Laravel\Maintenance\Console\Commands\MaintenanceUpCommand'];
         });
 
-        $this->commands('command.down');
+        $this->app->singleton('command.maintenance.down', function ($app) {
+            return $app['Mwc\Laravel\Maintenance\Console\Commands\MaintenanceDownCommand'];
+        });
+
+        $this->commands('command.maintenance.up');
+
+        $this->commands('command.maintenance.down');
     }
 
     /**
@@ -77,8 +97,9 @@ class MaintenanceService extends ServiceProvider
     {
         return array(
             'maintenance',
-            'command.down',
-            'command.up'
+            'maintenance.manager',
+            'command.maintenance.up',
+            'command.maintenance.down'
         );
     }
 }

@@ -6,7 +6,7 @@ $finder = Symfony\CS\Finder\DefaultFinder::create()
 $header = <<< EOF
 This file is part of the Laravel Maintenance package.
 
-(c) Claude Khedhiri <claude@khedhiri.com>
+(c) Claude Khedhiri <khedhiri@madewithcaffeine.com>
 
 For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
